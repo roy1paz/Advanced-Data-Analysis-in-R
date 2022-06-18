@@ -1,0 +1,18 @@
+Dataset - https://wonder.cdc.gov/controller/datarequest/D66
+Dataset Documentation - https://wonder.cdc.gov/wonder/help/Natality.html#
+
+1. Wonder CDC - Datasets site of CDC.gov - 'Natality, 2007-2020'
+
+2. group by the data - Year, State, Age of Mother.
+
+3. Include - Fertility Rate (per 1000 women), Average Birth Weight, Standard Deviation for Average Birth Weight.
+
+3. State - all, Year - 2007-2020, Age of Mother - 10 groups of age, ICD Chapter - ICD-10 Codes.
+
+4. Save as txt extension. 'Natality, 2007-2020.txt'
+
+5. Open with Excel and save as CSV file. 'Natality, 2007-2020.csv'
+
+6. Remove Notes column and Explanation rows with Python. save as "Infant_Birth_2007-2020.csv"
+
+

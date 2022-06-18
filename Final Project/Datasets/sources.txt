@@ -1,0 +1,26 @@
+# SISE2601 Project data description
+================
+Team Members: Roy Paz, Tzahi Katz, Noam Munz
+#################################################################################################################
+
+Below are sources for the data used in this proposal
+
+- Air quality datasets:
+https://aqs.epa.gov/aqsweb/airdata/download_files.html#AQI
+
+- Infant deaths datasets:
+https://wonder.cdc.gov/controller/datarequest/D69;jsessionid=6DE2DADD3E76C8342ED48F9D1ACC
+
+- births (natality) datasets:
+https://wonder.cdc.gov/controller/datarequest/D66
+
+- Income by State:
+https://www.irs.gov/statistics/soi-tax-stats-county-data
+https://www.kff.org/other/state-indicator/distribution-by-age/?dataView=0&currentTimeframe=0&selectedDistributions=adults-19-25--adults-26-34--adults-35-54--adults-55-64&selectedRows=%7B%22states%22:%7B%22all%22:%7B%7D%7D%7D&sortModel=%7B%22colId%22:%22Location%22,%22sort%22:%22asc%22%7D
+kff helped us calculate the proportion of earning population for each state
+
+#################################################################################################################
+Prior theory:
+air pollution impacts on newborns by State of Global Air - https://www.stateofglobalair.org/health/newborns 
+pollution on infants air by Janet Currie published to the Society for Research in Child Development
+pollutant PM2.5 affects on child moratlity (<5) in Asisan countires published to the International Journal of Enviormental Research and Public Health - https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8296171/

@@ -1,0 +1,11 @@
+Dataset - https://aqs.epa.gov/aqsweb/airdata/download_files.html#AQI
+
+Data Explanation - https://www.epa.gov/outdoor-air-quality-data/about-air-data-reports
+
+1. Got data from epa.gov -> Air Data: Air Quality Data Collected at Outdoor Monitors Across the US -> Pre-generated Data Files -> Tables of Daily AQI (download 2003-2020 CSV files)
+
+2. Merge CSV files of each year by Excel, to one CSV file. 'annual_aqi_by_county_2003-2020.csv'
+
+3. Using python, read the CSV file and get a group by 'Year' and 'State', and use the average values. (code in AIR_DATA_GROUPBY.py) 
+
+4. Save DF as CSV - 'aqi_by_State_2003-2020.csv'

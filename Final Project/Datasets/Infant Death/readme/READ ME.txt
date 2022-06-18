@@ -1,0 +1,18 @@
+Dataset - https://wonder.cdc.gov/controller/datarequest/D69;jsessionid=6DE2DADD3E76C8342ED48F9D1ACC
+Dataset Documentation - https://wonder.cdc.gov/wonder/help/lbd.html#
+
+1. Wonder CDC - Data sets site of CDC.gov
+
+2. First, group by the data - State, Year of Death, Age of Mother, ICD Chapter
+
+3. State - all, Year of Death - 2007-2019, Age of Mother - 9 groups of age, ICD Chapter - ICD-10 Codes.
+
+4. Include Death Rate.
+
+4. Save as txt extension. 'Linked Birth  Infant Death Records, 2007-2019.txt'
+
+5. Open with Excel and save as CSV file. 'Linked Birth  Infant Death Records, 2007-2019.csv'
+
+6. Remove Notes column and Explanation rows with Python. save as "Infant_Death_2007-2019.csv"
+
+

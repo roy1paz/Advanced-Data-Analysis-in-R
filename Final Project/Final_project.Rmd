@@ -1,0 +1,310 @@
+---
+title: "Project Proposal"
+author: "Roy Paz, Tzahi Katz, Noam Munz"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r load-packages, echo=FALSE, message = FALSE, warning=FALSE}
+library(knitr)
+library(tidyverse)
+library(dplyr)
+library(gridExtra)
+library(tidyverse)
+library(usmap)
+library(ggplot2)
+library(grid)
+library(modeldata)
+library(tidymodels)
+library(plot3D)
+```
+
+```{r setup, include = FALSE}
+opts_chunk$set(echo=FALSE) # hide source code in the document
+```
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+# loading data
+AQI_data = read.csv(file = 'C:\\Users\\roy1p\\PycharmProjects\\BGU python\\Advanced Programming project\\Final Data\\air quality\\aqi_by_State_2003-2020.csv')
+birth_data = read.csv(file = "C:\\Users\\roy1p\\PycharmProjects\\BGU python\\Advanced Programming project\\Final Data\\Infant Birth\\Infant_Birth_2007-2020.csv")
+death_data = read.csv(file ="C:\\Users\\roy1p\\PycharmProjects\\BGU python\\Advanced Programming project\\Final Data\\Infant Death\\Infant_Death_2007-2019.csv")
+income = read.csv(file = "C:\\Users\\roy1p\\OneDrive - post.bgu.ac.il\\Desktop\\Coding\\R projects\\Advanced data analysis in R\\Final Project\\Final Project\\Datasets\\income by state\\income_by_state.csv")
+
+
+# filter only 2007-2019 from the data
+AQI_data = AQI_data %>% filter(Year <= 2019 & Year >= 2007)
+birth_data = birth_data %>% filter(Year <= 2019 & Year >= 2007)
+birth_data["State"][birth_data["State"] == "District of Columbia"] <- "District Of Columbia"
+
+# normalizing air quality days count in proportion to number of days sampled
+AQI_data$Good.Days = with(AQI_data,Good.Days/Days.with.AQI)
+AQI_data$Moderate.Days = with(AQI_data,Moderate.Days/Days.with.AQI)
+AQI_data$Unhealthy.for.Sensitive.Groups.Days = with(AQI_data,Unhealthy.for.Sensitive.Groups.Days/Days.with.AQI)
+AQI_data$Unhealthy.Days = with(AQI_data,Unhealthy.Days/Days.with.AQI)
+AQI_data$Very.Unhealthy.Days = with(AQI_data,Very.Unhealthy.Days/Days.with.AQI)
+AQI_data$Hazardous.Days = with(AQI_data,Hazardous.Days/Days.with.AQI)
+AQI_data$X90th.Percentile.AQI = with(AQI_data,X90th.Percentile.AQI/Days.with.AQI)
+AQI_data$Median.AQI = with(AQI_data,Median.AQI/Days.with.AQI)
+AQI_data$Days.CO = with(AQI_data,Days.CO/Days.with.AQI)
+AQI_data$Days.NO2 = with(AQI_data,Days.NO2/Days.with.AQI)
+AQI_data$Days.Ozone = with(AQI_data,Days.Ozone/Days.with.AQI)
+AQI_data$Days.SO2 = with(AQI_data,Days.SO2/Days.with.AQI)
+AQI_data$Days.PM2.5 = with(AQI_data,Days.PM2.5/Days.with.AQI)
+AQI_data$Days.PM10 = with(AQI_data,Days.PM10/Days.with.AQI)
+
+# fixing death rate column
+for (i in 1:nrow(death_data)) {
+  death_data[i,12] = (gsub("\\(Unreliable\\)", "", death_data[i,12]))
+}
+death_data <- transform(death_data, Death.Rate = as.numeric(Death.Rate))
+```
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+death_data_grouped_age = death_data %>% group_by(State, Year.of.Death, Age.of.Mother) %>% summarise_at(vars("Death.Rate"),mean)
+
+death_data_2019 = death_data_grouped_age %>% filter(Year.of.Death == 2019)
+
+ggplot(death_data_2019, aes(x= reorder(State, -Death.Rate,sum), y= Death.Rate))+
+  geom_col(width = 0.8, aes(fill= Age.of.Mother))+
+  labs(title="Infant Mortality Rate By in USA 2019", subtitle = "state and mother's age",x= "State", y = "Mortality Rate", caption= "Infant Mortality Rate: deaths per 1000 births\nSource: CDC WONDER - Linked Birth / Infant Death Records, 2007-2019",fill = "Age of Mother")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.2, hjust=1, size= 7),
+        axis.text.y = element_text(size= 8),
+        axis.title.x = element_text(margin = unit(c(3, 0, 0, 0), "mm")),
+        panel.border=element_rect(fill=NA))+ scale_fill_brewer(palette = "BrBG")
+```
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+death_data = death_data %>% rename(Year = "Year.of.Death")
+grouped_death_year = death_data %>% group_by(Year) %>% summarise_at(vars('Death.Rate'),mean)
+grouped_birth_Year = birth_data %>% group_by(Year) %>% summarise_at(vars('Standard.Deviation.for.Average.Birth.Weight'),mean)
+df_to_plot = merge(grouped_death_year, grouped_birth_Year, by="Year")
+
+ggplot(df_to_plot, aes(x= Standard.Deviation.for.Average.Birth.Weight , y= Death.Rate))+
+  theme_bw()+
+  geom_smooth()+
+  geom_point(color = 'indianred', size = 2)+
+  labs(title="Mortality Rate by STD for Average Birth Weight",x= "STD for Average Birth Weight (gr)", y = "Mortality Rate", caption= "Infant Mortality Rate: deaths per 1000 births")+
+  guides(color = FALSE)
+
+
+```
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+#''' group by the tables '''
+grouped_birth_data = data.frame(birth_data["Year"],birth_data["State"], birth_data["Age.of.Mother.10"],birth_data["Average.Birth.Weight"],birth_data["Standard.Deviation.for.Average.Birth.Weight"])
+
+grouped_birth_data = grouped_birth_data %>% group_by(Year) %>% summarise_at(vars('Average.Birth.Weight',"Standard.Deviation.for.Average.Birth.Weight"),mean)
+
+death_group = death_data %>% group_by(Year) %>% summarise_at(vars("Death.Rate"),mean)
+
+#''' remove unmatch States '''
+AQI_data_grouped = AQI_data %>% group_by(Year) %>% summarise_at(vars("Days.CO","Days.NO2","Days.Ozone", "Days.SO2","Days.PM2.5","Days.PM10"),mean)
+#AQI_data_grouped = AQI_data_grouped %>% filter(State != "Country Of Mexico", State != "Puerto Rico", State != "Virgin Islands")
+
+
+# ''' make one data frame for AQI table and Birth table'''
+death_gas_data = merge(AQI_data_grouped, death_group, by= c("Year"))
+
+
+# plot from here
+graph_SO2 = ggplot(death_gas_data,aes(x = Days.SO2))+
+  geom_smooth(aes(y = Death.Rate), color="#FFB74D")+
+  theme_bw()+
+  scale_x_continuous(labels = scales::percent)+
+  labs(x="So2 as main pollutant", y = "")+
+  theme(axis.title = element_text(size = 9))
+
+
+graph_PM2.5 = ggplot(death_gas_data,aes(x = Days.PM2.5))+
+  geom_smooth(aes(y = Death.Rate), color="#FFB74D")+
+    theme_bw()+
+  scale_x_continuous(labels = scales::percent)+
+  labs(x="PM2.5 as main pollutant", y = "")+
+  theme(axis.title = element_text(size = 9))
+
+
+graph_PM10 = ggplot(death_gas_data,aes(x = Days.PM10))+
+  geom_smooth(aes(y = Death.Rate), color="#FFB74D")+
+    theme_bw()+
+  scale_x_continuous(labels = scales::percent)+
+  labs(x="PM10 as main pollutant", y = "")+
+  theme(axis.title = element_text(size = 9))
+
+
+graph_OZONE = ggplot(death_gas_data,aes(x = Days.Ozone))+
+  geom_smooth(aes(y = Death.Rate), color="#FFB74D")+
+    theme_bw()+
+  scale_x_continuous(labels = scales::percent)+
+  labs(x="Ozone as main pollutant", y = "")+
+  theme(axis.title = element_text(size = 9))
+
+
+graph_NO2 = ggplot(death_gas_data,aes(x = Days.NO2))+
+  geom_smooth(aes(y = Death.Rate), color="#FFB74D")+
+    theme_bw()+
+  scale_x_continuous(labels = scales::percent)+
+  labs(x="NO2 as main pollutant", y = "")+
+  theme(axis.title = element_text(size = 9))
+
+graph_CO = ggplot(death_gas_data,aes(x = Days.CO))+
+  geom_smooth(aes(y = Death.Rate), color="#FFB74D")+
+  theme_bw()+
+  scale_x_continuous(labels = scales::percent)+
+  labs(x="CO as main pollutant", y = "")+
+  theme(axis.title = element_text(size = 9))
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+grid.arrange(graph_PM2.5, graph_SO2, graph_CO,graph_OZONE,graph_PM10, graph_NO2, ncol=2, top="Effects of Different types of Gases on Mortality Rate\nIn USA in 2007-2019", left="Mortality Rate", bottom= "Shadow surrounding the line represent a 95% confidence interval")
+```
+
+```{r,  echo=FALSE, warning=FALSE, message=FALSE}
+# fig 7
+grouped_death_state = death_data %>% group_by(State) %>% summarise_at(vars('Death.Rate'),sum)
+grouped_income_state = income %>% group_by(State) %>% summarise_at(vars('average'),mean)
+
+grouped_death_state$Death.Rate = with(grouped_death_state, grouped_death_state$Death.Rate/84)
+df_to_plot2 = merge(grouped_death_state, grouped_income_state, by="State")
+ggplot(df_to_plot2, aes(reorder(State, -Death.Rate), y= Death.Rate, fill = average, color= State))+
+  geom_col(size= 0.7)+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.2, hjust=1, size= 7),
+        axis.text.y = element_text(size= 8),
+        axis.title.x = element_text(margin = unit(c(0, 0, 0, 0), "mm")),
+        panel.border=element_rect(fill=NA), legend.text=element_text(size=9), legend.title=element_text(size=9))+
+  labs(title="Mortality Rate in USA in 2007-2019", subtitle = "Color scale - Average household income",x= "State", y = "Mortality Rate", caption= "Red Countries: Low income and high mortality rate\nBlack Countries: Low income and low mortality rate", fill = "USD (in thousands)")+
+  scale_color_manual(values = c("red","white","white","white","white","white","white","white","white","white", "white","white","black","white","white","white","white","white","white","black","white","white","white","white","red","white","black","white","white","white","white","white","white","red","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white"))+
+  guides(color = FALSE)+
+  scale_fill_gradient(low="cyan", high="DarkMagenta")
+```
+
+```{r,  echo=FALSE, warning=FALSE, message=FALSE}
+AQI_data = AQI_data %>% filter(State != "Country Of Mexico", State != "Puerto Rico", State != "Virgin Islands")
+
+AQI_data$Bad.Days = AQI_data$Moderate.Days + AQI_data$Unhealthy.for.Sensitive.Groups.Days + AQI_data$Unhealthy.Days + AQI_data$Very.Unhealthy.Days + AQI_data$Hazardous.Days
+AQI_data_grouped = AQI_data %>% group_by(Year) %>% summarise_at(vars("Bad.Days"), mean)
+grouped_birth_State = birth_data %>% group_by(State) %>% summarise_at(vars(Standard.Deviation.for.Average.Birth.Weight), mean)
+AQI_BIRTH_merge = merge(AQI_data_grouped, grouped_birth_Year, by="Year")
+ggplot(AQI_BIRTH_merge, aes(x= Bad.Days, y= Standard.Deviation.for.Average.Birth.Weight))+
+  geom_smooth()+
+  geom_jitter(color = "indianred", size= 2)+
+  theme_bw()+
+  scale_x_continuous(labels = scales::percent)+
+  labs(title="STD for Average Birth Weight by Bad Days",x= "Bad Days Percentage", y = "STD for Average Birth Weight (gr)", fill = "Mortality Rate", caption= "Bad Days: Days with AQI over 50")
+```
+
+```{r,  echo=FALSE, warning=FALSE, message=FALSE}
+colnames(AQI_data)[which(names(AQI_data) == "State")] <- "state"
+AQI_data2019 = AQI_data %>% filter(Year == 2019)
+AQI_data2007 = AQI_data %>% filter(Year == 2007)
+
+map2019 = plot_usmap(data = AQI_data2019, values = "Bad.Days", color = "Black", labels = TRUE, )+
+  labs(title = "2019", subtitle = "Precentage of Bad Days") + 
+  scale_fill_continuous(
+    low = "white", high = "red", name = "Percentage", label = scales::percent) +
+  theme(legend.position = "right")+ theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust=0.5))
+map2019$layers[[2]]$aes_params$size <- 1.3
+
+map2007 = plot_usmap(data = AQI_data2007, values = "Bad.Days", color = "Black", labels = TRUE, )+
+  labs(title = "2007", subtitle = "Precentage of Bad Days") + 
+  scale_fill_continuous(
+    low = "white", high = "red", name = "Percentage", label = scales::percent
+  ) +
+  theme(legend.position = "right") + theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust=0.5))
+map2007$layers[[2]]$aes_params$size <- 1.3
+
+grid.arrange(map2007, map2019,nrow = 1, top=textGrob("Percentage of Bad Days in USA\nGrouped by State", gp=
+gpar(fontsize=12, font=3)), bottom = textGrob("*Bad days are days which the AQI is above 50\nSource: epa.gov - AQI Datasets", gp=gpar(fontsize=8, font=3)))
+colnames(AQI_data)[which(names(AQI_data) == "state")] <- "State"
+```
+
+```{r,  echo=FALSE, warning=FALSE, message=FALSE}
+grouped_AQI_state = AQI_data %>% group_by(State) %>% summarise_at(vars(Bad.Days),mean)
+AQI_state_low_income = grouped_AQI_state %>% filter(State %in% c("Montana","Maine","Idaho"))
+AQI_state_high_income = grouped_AQI_state %>% filter(State %in% c("Maryland", "Illinois","New York"))
+
+AQI_state_low_income_hd = grouped_AQI_state %>% filter(State %in% c("Mississippi","Alabama","North Carolina"))
+
+AQI_state_low_income$Death.Rate = 'Low'
+AQI_state_low_income_hd$Death.Rate = 'High'
+
+moderate6 = rbind(AQI_state_low_income_hd,AQI_state_low_income)
+
+print(moderate6)
+```
+```{r,  echo=FALSE, warning=FALSE, message=FALSE}
+#fig 8
+ggplot(moderate6, aes(reorder(State,-Bad.Days) , y=Bad.Days, fill = Death.Rate,color = State, label = as.character(round(Bad.Days, 2)*100))) +
+  geom_col(alpha = 0.85)+
+  geom_text(size = 3, position = position_stack(vjust = 0.5))+
+  scale_y_continuous(labels = scales::percent)+
+  labs(title="Bad Days by State", subtitle = "Low Income States",x= "State", y = "Bad Days", fill = "Mortality Rate", caption= "Bad Days: Days with AQI over 50")+
+  theme(axis.text.x = element_text(size= 9))+
+  scale_fill_manual(values= c("firebrick", "goldenrod"))+
+  scale_color_manual(values = c("black","black","black","black","black","black"))+
+  guides(color = FALSE)
+```
+```{r,  echo=FALSE, warning=FALSE, message=FALSE}
+aqi_death <- merge(death_data, AQI_data, by = c("State", "Year")) 
+aqi_death_income <- merge(aqi_death, income, by = c("State", "Year"))
+lm_data <-  merge(aqi_death_income, birth_data, by = c("State", "Year")) %>% group_by(State) %>% summarise_at(vars("Standard.Deviation.for.Average.Birth.Weight","Average.Birth.Weight","Bad.Days", "average", "Death.Rate"), mean)
+
+scaled_lm_data <- cbind(lm_data[,1],as.data.frame(scale(lm_data[2:6])))
+
+set.seed(118)
+split1 <- initial_split(scaled_lm_data, prop = 0.80)
+train_data <- training(split1)
+test_data <- testing(split1)
+
+model_on_train <- lm(Standard.Deviation.for.Average.Birth.Weight ~  Bad.Days + average, data = train_data)
+p <-  predict(model_on_train, test_data)
+
+linear_reg() %>%
+ set_engine("lm") %>%
+ fit(Standard.Deviation.for.Average.Birth.Weight ~  Bad.Days + average, data = train_data) %>%
+ tidy()
+```
+
+
+```{r,  echo=FALSE, warning=FALSE, message=FALSE}
+rsqtest <- cbind(test_data$Standard.Deviation.for.Average.Birth.Weight, p)
+colnames(rsqtest) <- c('C1','C2')
+rq <- as_tibble(rsqtest)
+rsq(rq, truth = C1, estimate = C2)
+```
+
+
+```{r,  echo=FALSE, warning=FALSE, message=FALSE}
+# set the x, y, and z variables
+x <- train_data$Bad.Days
+y <- train_data$average
+z <- train_data$Standard.Deviation.for.Average.Birth.Weight
+
+# Compute the linear regression 
+fit <- lm(z ~ x + y)
+
+# create a grid from the x and y values (min to max) and predict values for every point
+# this will become the regression plane
+grid.lines = 40
+x.pred <- seq(min(x), max(x), length.out = grid.lines)
+y.pred <- seq(min(y), max(y), length.out = grid.lines)
+xy <- expand.grid( x = x.pred, y = y.pred)
+z.pred <- matrix(predict(fit, newdata = xy), 
+                 nrow = grid.lines, ncol = grid.lines)
+
+# create the fitted points for droplines to the surface
+fitpoints <- predict(fit)
+
+# scatter plot with regression plane
+scatter3D(x, y, z, pch = 19, cex = 1,colvar = NULL, col="red", 
+          theta = 260, phi = 15, bty="b",
+          xlab = "", ylab = "Average income", zlab = "weight std",  
+          surf = list(x = x.pred, y = y.pred, z = z.pred,  
+                      facets = TRUE, fit = fitpoints, col=ramp.col (col = c("dodgerblue3","seagreen2"), n = 300, alpha=0.9), border="black"), main = "Reression Model")
+
+```
+
+
