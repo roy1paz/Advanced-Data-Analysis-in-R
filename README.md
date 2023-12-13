@@ -30,25 +30,31 @@ The data contains:
 Further information about the data dimensions and source can be found in the README appendix.
 
 **Infant death data:**
-a data set detailing, births, health complications, deaths, and causes of death among babies under 1 year of age as well as their mothers in the United States in 2007-2019.
+a data set detailing, births, health complications, deaths, and causes of death among babies under one year of age as well as their mothers in the United States in 2007-2019.
 The data contains:
 - Division of cases by mother's age
 - Chapter code which indicates the health complication/cause of death.
 - number of deaths in proportion to the number of births.
 Further information about the data dimensions and source can be found in the README appendix.
 
-
+<br />
 ![Local Image](./picture1.jpeg)
+<br />
 The graph aims to demonstrate how fluctuations in the percentage of "bad days" correlate with the variability in average birth weight. 
-
+<br />
+<br />
 ![Local Image](./picture3.jpeg)
-The plot visually compares the mortality rates across different U.S. states. The height of each bar indicates the mortality rate for that particular state. The states are ordered along the x-axis, allowing for a quick comparison of mortality rates from one state to another.
-
+<br />
+The graph visually compares the mortality rates across different U.S. states. The height of each bar indicates the mortality rate for that particular state. The states are ordered along the x-axis, allowing for a quick comparison of mortality rates from one state to another.
+<br />
+<br />
 ![Local Image](./picture2.jpeg)
-This graph demonstrates a correlation between the prevalence of different types of gases to the birth weight of infants.
+<br />
+The graph demonstrates a correlation between the prevalence of different types of gases to the birth weight of infants.
 Although all averages seem to be considered healthy weights for newborns, there seems to be a trend for some gases like So2 and PM2.5.
 Exploring Morbidity in infants and how it relates to weight could grant us vital information regarding the effects of air quality on an infant's health.
-
+<br />
+<br />
 
 ## 4. Data analysis plan
 To answer our research question we will use air quality data (explanatory, X) to explore correlating health outcomes in infants and pregnant women (response, Y). results in different states and different years will be used as comparison groups.
