@@ -40,21 +40,21 @@ Further information about the data dimensions and source can be found in the REA
 <br />
 
 
-![Local Image](./picture1.jpeg)
+![Local Image](./pictures/picture1.jpeg)
 <br />
 <br />
 The graph aims to demonstrate how fluctuations in the percentage of "bad days" correlate with the variability in average birth weight. 
 <br />
 <br />
 <br />
-![Local Image](./picture3.jpeg)
+![Local Image](./pictures/picture3.jpeg)
 <br />
 <br />
 The graph visually compares the mortality rates across different U.S. states. The height of each bar indicates the mortality rate for that particular state. The states are ordered along the x-axis, allowing for a quick comparison of mortality rates from one state to another.
 <br />
 <br />
 <br />
-![Local Image](./picture2.jpeg)
+![Local Image](./pictures/picture2.jpeg)
 <br />
 <br />
 
