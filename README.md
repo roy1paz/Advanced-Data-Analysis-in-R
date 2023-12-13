@@ -37,7 +37,6 @@ The data contains:
 - number of deaths in proportion to the number of births.
 Further information about the data dimensions and source can be found in the README appendix.
 
-<br />
 ![Local Image](./picture1.jpeg)
 <br />
 The graph aims to demonstrate how fluctuations in the percentage of "bad days" correlate with the variability in average birth weight. 
