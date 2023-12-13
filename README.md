@@ -63,8 +63,3 @@ Although all averages seem to be considered healthy weights for newborns, there 
 Exploring Morbidity in infants and how it relates to weight could grant us vital information regarding the effects of air quality on an infant's health.
 <br />
 <br />
-
-## 4. Data analysis plan
-To answer our research question we will use air quality data (explanatory, X) to explore correlating health outcomes in infants and pregnant women (response, Y). results in different states and different years will be used as comparison groups.
-
-To answer our question we will use data visualization and data manipulation methods such as plotting, mutating, pivoting, building statistical models, and interpreting the results.
